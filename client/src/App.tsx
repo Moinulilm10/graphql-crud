@@ -13,18 +13,55 @@ const GET_USERS = gql`
   }
 `;
 
+const GET_USERS_BY_ID = gql`
+  query getUserById($id: ID!) {
+    getUserById(id: $id) {
+      id
+      name
+      age
+      isMarried
+    }
+  }
+`;
+
 function App() {
-  const { data, error, loading } = useQuery(GET_USERS);
+  const {
+    loading: getUsersLoading,
+    error: getUsersError,
+    data: getUsersData,
+  } = useQuery(GET_USERS);
+  const {
+    data: getUserByIdData,
+    error: getUserByIdError,
+    loading: getUserByIdLoading,
+  } = useQuery(GET_USERS_BY_ID, {
+    variables: { id: "1" },
+  });
 
   return (
     <>
-      <h1>users</h1>
       <div>
-        {loading && <p>Loading...</p>}
-        {error && <p>Error: {error.message}</p>}
-        {data && (
+        <h1>Chosen User: </h1>
+        {getUserByIdLoading && <p>Loading...</p>}
+        {getUserByIdError && <p>Error: {getUserByIdError.message}</p>}
+        {getUserByIdData && (
+          <div>
+            <p>Name: {getUserByIdData.getUserById.name}</p>
+            <p>Age: {getUserByIdData.getUserById.age}</p>
+            <p>
+              Is Married: {getUserByIdData.getUserById.isMarried ? "Yes" : "No"}
+            </p>
+          </div>
+        )}
+      </div>
+
+      <div>
+        <h1>users</h1>
+        {getUsersLoading && <p>Loading...</p>}
+        {getUsersError && <p>Error: {error.message}</p>}
+        {getUsersData && (
           <ul>
-            {data.getUsers.map((user) => (
+            {getUsersData.getUsers.map((user) => (
               <li key={user.id}>
                 <p>Name: {user.name}</p>
                 <p>Age: {user.age}</p>
